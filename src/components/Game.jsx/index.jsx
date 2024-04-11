@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box, Slider, Typography } from "@mui/material";
 import PetsIcon from "@mui/icons-material/Pets";
 import ProductionQuantityLimitsSharpIcon from "@mui/icons-material/ProductionQuantityLimitsSharp";
@@ -74,6 +74,46 @@ const Fade = React.forwardRef(function Fade(props, ref) {
     </animated.div>
   );
 });
+
+
+function PhotoCapture() {
+  const videoRef = useRef(null);
+  const [capturedPhoto, setCapturedPhoto] = useState(null);
+
+  const handleCapture = () => {
+    const video = videoRef.current;
+
+    if (video && video.srcObject) {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+
+      // Configurar el tamaño del lienzo para que coincida con el tamaño del video
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      // Dibujar el fotograma actual del video en el lienzo
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Convertir la imagen del lienzo a base64
+      const imageDataURL = canvas.toDataURL('image/jpeg');
+
+      // Guardar la imagen en el localStorage
+      localStorage.setItem('capturedPhoto', imageDataURL);
+
+      // Actualizar el estado para mostrar la imagen capturada
+      setCapturedPhoto(imageDataURL);
+    }
+  };
+
+  return (
+    <div>
+      <video ref={videoRef} autoPlay />
+      <button onClick={handleCapture}>Capturar</button>
+      {capturedPhoto && <img src={capturedPhoto} alt="Captured" />}
+    </div>
+  );
+}
+
 
 export default function Game() {
   const [slider1Value, setSlider1Value] = useState(0);
@@ -170,47 +210,6 @@ export default function Game() {
   };
 
   // Función para tomar una foto y guardarla en el localStorage
-function takeAndSavePhoto() {
-  // Obtener el elemento de video y el botón de captura
-  const video = document.getElementById('video');
-  const captureButton = document.getElementById('captureButton');
-
-  // Obtener el lienzo donde se mostrará la foto
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-
-  // Habilitar la cámara y capturar la foto cuando se presione el botón
-  navigator.mediaDevices.getUserMedia({ video: true })
-    .then((stream) => {
-      video.srcObject = stream;
-      video.play();
-    })
-    .catch((err) => {
-      console.error('Error al acceder a la cámara:', err);
-    });
-
-  captureButton.addEventListener('click', () => {
-    // Configurar el tamaño del lienzo para que coincida con el tamaño del video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    // Dibujar el fotograma actual del video en el lienzo
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Convertir la imagen del lienzo a base64
-    const imageDataURL = canvas.toDataURL('image/jpeg');
-
-    // Guardar la imagen en el localStorage
-    localStorage.setItem('capturedPhoto', imageDataURL);
-
-    // Detener la transmisión de video
-    video.srcObject.getTracks().forEach(track => track.stop());
-
-    // Opcional: Mostrar la imagen capturada en algún lugar de la página
-    const capturedPhoto = document.getElementById('capturedPhoto');
-    capturedPhoto.src = imageDataURL;
-  });
-}
 
 // Llamar a la función para tomar y guardar la fot
   useEffect(() => {
@@ -226,7 +225,6 @@ function takeAndSavePhoto() {
         date: new Date(),
       });
       handleOpen();
-      takeAndSavePhoto();
     }
   }, [winner, open]);
 
@@ -426,6 +424,7 @@ function takeAndSavePhoto() {
             <Typography variant="h6" sx={{ color: "#3f51b5", mb: 2 }}>
               Felicidades Ganaste {winner}
             </Typography>
+            <PhotoCapture />
             <div className={`audio-waves ${isSpeaking ? "speaking" : ""}`}>
               {Array.from({ length: 15 }, (_, i) => (
                 <div
