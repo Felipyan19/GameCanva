@@ -85,7 +85,7 @@ export default function Game() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [open, setOpen] = useState(false);
   const [start, setStart] = useState(false);
-  const [countdown, setCountdown] = useState(3); 
+  const [game, setGame] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -124,10 +124,95 @@ export default function Game() {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
+
   const handleStart = () => {
-    setStart(!start);
-    setCountdown(1)
-  }
+    setStart(true);
+    Swal.fire({
+      title: "3",
+      icon: "info",
+      text: "¡Prepárate para la carrera!",
+      timer: 1000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+    })
+      .then(() => {
+        return Swal.fire({
+          title: "2",
+          icon: "info",
+          text: "¡Prepárate para la carrera!",
+          timer: 1000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      })
+      .then(() => {
+        return Swal.fire({
+          title: "1",
+          icon: "info",
+          text: "¡Prepárate para la carrera!",
+          timer: 1000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
+      })
+      .then(() => {
+        return Swal.fire({
+          title: "¡Comienza la carrera!",
+          icon: "success",
+          timer: 1000,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        }).then(() => {
+          setGame(true);
+          setStart(false);
+        });
+      });
+  };
+
+  // Función para tomar una foto y guardarla en el localStorage
+function takeAndSavePhoto() {
+  // Obtener el elemento de video y el botón de captura
+  const video = document.getElementById('video');
+  const captureButton = document.getElementById('captureButton');
+
+  // Obtener el lienzo donde se mostrará la foto
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+
+  // Habilitar la cámara y capturar la foto cuando se presione el botón
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then((stream) => {
+      video.srcObject = stream;
+      video.play();
+    })
+    .catch((err) => {
+      console.error('Error al acceder a la cámara:', err);
+    });
+
+  captureButton.addEventListener('click', () => {
+    // Configurar el tamaño del lienzo para que coincida con el tamaño del video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    // Dibujar el fotograma actual del video en el lienzo
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Convertir la imagen del lienzo a base64
+    const imageDataURL = canvas.toDataURL('image/jpeg');
+
+    // Guardar la imagen en el localStorage
+    localStorage.setItem('capturedPhoto', imageDataURL);
+
+    // Detener la transmisión de video
+    video.srcObject.getTracks().forEach(track => track.stop());
+
+    // Opcional: Mostrar la imagen capturada en algún lugar de la página
+    const capturedPhoto = document.getElementById('capturedPhoto');
+    capturedPhoto.src = imageDataURL;
+  });
+}
+
+// Llamar a la función para tomar y guardar la fot
   useEffect(() => {
     if (winner && !open) {
       const endTime = new Date();
@@ -141,26 +226,10 @@ export default function Game() {
         date: new Date(),
       });
       handleOpen();
+      takeAndSavePhoto();
     }
   }, [winner, open]);
 
-  useEffect(() => {
-    let timer;
-    if (start && countdown > 0) {
-      // Si la modal está abierta y el contador no ha llegado a cero, configurar un temporizador para actualizar el contador
-      timer = setInterval(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1); // Decrementar el contador en 1 segundo
-      }, 1000);
-    }
-    return () => clearInterval(timer); // Limpiar el temporizador cuando el componente se desmonte o el estado cambie
-  }, [start, countdown]); // Dependencias del efecto
-
-  useEffect(() => {
-    // Cuando el contador llega a cero, cerrar la modal y comenzar el juego
-    if (countdown === 0) {
-      handleStart();
-    }
-  }, [countdown]); 
   const handleSlider1Change = (event, newValue) => {
     if (newValue >= 100 && !winner) {
       setWinner("Player 1");
@@ -177,13 +246,6 @@ export default function Game() {
     setSlider2Value(newValue);
   };
 
-
-
-  useEffect(() => {
-    if (start) {
-      speak("Empieza la carrera");
-    }
-  }, [start])
   return (
     <motion.div
       initial={{ opacity: 0, y: -200 }}
@@ -191,7 +253,7 @@ export default function Game() {
       transition={{ duration: 1, type: "spring", stiffness: 120, damping: 10 }}
       style={{ overflowY: "auto", height: "100vh", padding: "20px" }}
     >
-      {open && (
+      {(open || start) && (
         <Confetti width={window.innerWidth} height={window.innerHeight} />
       )}
 
@@ -205,13 +267,18 @@ export default function Game() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 1)), url(${raceImg})`,
+              backgroundImage: `${
+                !game
+                  ? "linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 1)), url(" +
+                    raceImg +
+                    ")"
+                  : "url(" + raceImg + ")"
+              }`,
               backgroundSize: "contain",
               borderRadius: "10px",
               boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.1)",
               position: "relative",
               overflow: "hidden",
-
             }}
             onClick={handleStart}
           >
@@ -227,13 +294,26 @@ export default function Game() {
                 zIndex: 1,
               }}
             >
-
-              <Typography variant="h4" sx={{ mb: 1 , color: "var(--azure-500)", fontWeight: "bold"}}>
-                Empezar la carrera
-              </Typography>
-              <Typography variant="body1 " sx={{ color: "var(--azure-50)" }}>
-                Mueve los sliders para ganar
-              </Typography>
+              {!game && (
+                <>
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      mb: 1,
+                      color: "var(--azure-500)",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Empezar la carrera
+                  </Typography>
+                  <Typography
+                    variant="body1 "
+                    sx={{ color: "var(--azure-50)" }}
+                  >
+                    Mueve los sliders para ganar
+                  </Typography>
+                </>
+              )}
             </div>
             <div
               style={{
@@ -274,18 +354,20 @@ export default function Game() {
               ></div>
             </div>
           </Box>
-          <div style={{ marginTop: "2rem" }}>
-            <StyledSlider
-              value={slider1Value}
-              onChange={handleSlider1Change}
-              aria-label="player 1 slider"
-            />
-            <StyledSlider
-              value={slider2Value}
-              onChange={handleSlider2Change}
-              aria-label="player 2 slider"
-            />
-          </div>
+          {game && (
+            <div style={{ marginTop: "2rem" }}>
+              <StyledSlider
+                value={slider1Value}
+                onChange={handleSlider1Change}
+                aria-label="player 1 slider"
+              />
+              <StyledSlider
+                value={slider2Value}
+                onChange={handleSlider2Change}
+                aria-label="player 2 slider"
+              />
+            </div>
+          )}
         </Grid>
         <Grid item xs={12} md={3}>
           <WinnerAnnouncement>
@@ -322,25 +404,6 @@ export default function Game() {
           </Typography>
         </Grid>
       </Grid>
-      <Modal
-      aria-labelledby="spring-modal-title"
-      aria-describedby="spring-modal-description"
-      open={start}
-      onClose={handleStart}
-      closeAfterTransition
-      BackdropComponent={Backdrop}
-      BackdropProps={{
-        timeout: 500,
-      }}
-    >
-      <div style={{ textAlign: "center", padding: "2rem" }}>
-        {countdown > 0 && <Typography variant="h2">{countdown}</Typography>}
-        {countdown === 0 && <Typography variant="h2">Start</Typography>}
-        <Button variant="contained" color="primary" onClick={handleStart} style={{ marginTop: "1rem" }}>
-          Cancel
-        </Button>
-      </div>
-    </Modal>
 
       <Modal
         aria-labelledby="spring-modal-title"
@@ -351,6 +414,11 @@ export default function Game() {
         BackdropComponent={Backdrop}
         BackdropProps={{
           timeout: 500,
+        }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Fade in={open}>
