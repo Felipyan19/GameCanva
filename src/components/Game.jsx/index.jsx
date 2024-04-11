@@ -14,21 +14,7 @@ import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import { useSpring, animated } from "@react-spring/web";
 import Confetti from "react-confetti";
-
-const StyledBox = styled(Box)({
-  borderRadius: 8,
-  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
-  width: "80%",
-  height: "20%",
-  position: "relative",
-  backgroundColor: "white", // Add a background color if needed
-});
-
-const IconContainer = styled(Box)({
-  position: "absolute",
-  top: "50%",
-  transform: "translateY(-50%)",
-});
+import raceImg from "../../assets/race.avif";
 
 const StyledSlider = styled(Slider)({
   "& .MuiSlider-thumb": {
@@ -40,14 +26,6 @@ const StyledSlider = styled(Slider)({
     },
   },
 });
-
-const ConfettiContainer = styled(Box)({
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-  });
 
 const WinnerAnnouncement = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
@@ -97,27 +75,6 @@ const Fade = React.forwardRef(function Fade(props, ref) {
   );
 });
 
-Fade.propTypes = {
-  children: PropTypes.element.isRequired,
-  in: PropTypes.bool,
-  onClick: PropTypes.any,
-  onEnter: PropTypes.func,
-  onExited: PropTypes.func,
-  ownerState: PropTypes.any,
-};
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
-
 export default function Game() {
   const [slider1Value, setSlider1Value] = useState(0);
   const [slider2Value, setSlider2Value] = useState(0);
@@ -126,7 +83,9 @@ export default function Game() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [start, setStart] = useState(false);
+  const [countdown, setCountdown] = useState(3); 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -165,7 +124,10 @@ export default function Game() {
     }, 1000);
     return () => clearInterval(interval);
   }, []);
-
+  const handleStart = () => {
+    setStart(!start);
+    setCountdown(1)
+  }
   useEffect(() => {
     if (winner && !open) {
       const endTime = new Date();
@@ -180,8 +142,25 @@ export default function Game() {
       });
       handleOpen();
     }
-  }, [winner]);
+  }, [winner, open]);
 
+  useEffect(() => {
+    let timer;
+    if (start && countdown > 0) {
+      // Si la modal está abierta y el contador no ha llegado a cero, configurar un temporizador para actualizar el contador
+      timer = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1); // Decrementar el contador en 1 segundo
+      }, 1000);
+    }
+    return () => clearInterval(timer); // Limpiar el temporizador cuando el componente se desmonte o el estado cambie
+  }, [start, countdown]); // Dependencias del efecto
+
+  useEffect(() => {
+    // Cuando el contador llega a cero, cerrar la modal y comenzar el juego
+    if (countdown === 0) {
+      handleStart();
+    }
+  }, [countdown]); 
   const handleSlider1Change = (event, newValue) => {
     if (newValue >= 100 && !winner) {
       setWinner("Player 1");
@@ -198,40 +177,104 @@ export default function Game() {
     setSlider2Value(newValue);
   };
 
+
+
+  useEffect(() => {
+    if (start) {
+      speak("Empieza la carrera");
+    }
+  }, [start])
   return (
     <motion.div
       initial={{ opacity: 0, y: -200 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1, type: "spring", stiffness: 120, damping: 10 }}
-      style={{ width: "80%", margin: "auto" }}
+      style={{ overflowY: "auto", height: "100vh", padding: "20px" }}
     >
       {open && (
-      <ConfettiContainer>
         <Confetti width={window.innerWidth} height={window.innerHeight} />
-      </ConfettiContainer>
       )}
-      <Title title="Game Canva" />
 
-      <Grid container spacing={2} style={{ height: "100%" }}>
-      <Grid item xs={12} md={9} style={{ marginBottom: "20px" }}>
-          <StyledBox>
-            <Box
-              sx={{
-                height: 200,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+      <Title title="Carrera" />
+
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={9}>
+          <Box
+            sx={{
+              height: 200,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 1)), url(${raceImg})`,
+              backgroundSize: "contain",
+              borderRadius: "10px",
+              boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.1)",
+              position: "relative",
+              overflow: "hidden",
+
+            }}
+            onClick={handleStart}
+          >
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "70%",
+                maxWidth: "300px",
+                textAlign: "center",
+                zIndex: 1,
               }}
             >
-              <IconContainer sx={{ left: `${slider1Value}%`, top: "30%" }}>
-                <PetsIcon />
-              </IconContainer>
-              <IconContainer sx={{ left: `${slider2Value}%`, top: "70%" }}>
-                <ProductionQuantityLimitsSharpIcon />
-              </IconContainer>
-            </Box>
-          </StyledBox>
-          <div style={{ width: "70%", marginTop: 25 }}>
+
+              <Typography variant="h4" sx={{ mb: 1 , color: "var(--azure-500)", fontWeight: "bold"}}>
+                Empezar la carrera
+              </Typography>
+              <Typography variant="body1 " sx={{ color: "var(--azure-50)" }}>
+                Mueve los sliders para ganar
+              </Typography>
+            </div>
+            <div
+              style={{
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                zIndex: 0,
+              }}
+            >
+              <PetsIcon
+                style={{
+                  position: "absolute",
+                  left: `calc(${slider1Value}%)`,
+                  top: "30%",
+                  fontSize: "2rem",
+                  color: "var(--azure-400)",
+                  zIndex: 1,
+                }}
+              />
+              <ProductionQuantityLimitsSharpIcon
+                style={{
+                  position: "absolute",
+                  left: `calc(${slider2Value}%)`,
+                  top: "70%",
+                  fontSize: "2rem",
+                  color: "var(--azure-400)",
+                  zIndex: 1,
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "rgba(255, 255, 255, 0.3)",
+                  zIndex: 0,
+                }}
+              ></div>
+            </div>
+          </Box>
+          <div style={{ marginTop: "2rem" }}>
             <StyledSlider
               value={slider1Value}
               onChange={handleSlider1Change}
@@ -247,7 +290,20 @@ export default function Game() {
         <Grid item xs={12} md={3}>
           <WinnerAnnouncement>
             <Typography variant="h6">Gano: {winner}</Typography>
-            <Typography variant="body1">¡Felicidades!</Typography>
+            {winner && (
+              <div className="audio-waves">
+                {Array.from({ length: 15 }, (_, i) => (
+                  <div
+                    key={i}
+                    className="wave"
+                    style={{ animationDuration: `${0.5 + i * 0.1}s` }}
+                  ></div>
+                ))}
+              </div>
+            )}
+            <Typography variant="body1">
+              {winner ? "¡Felicidades!" : "¡Intenta de nuevo!"}
+            </Typography>
             <Typography variant="body2">
               Jugador ganador: {winner ? winner : "Ninguno"}
             </Typography>
@@ -256,16 +312,10 @@ export default function Game() {
             </Typography>
           </WinnerAnnouncement>
 
-          <DrawAnnouncement>
-            <Typography variant="h6">Perdio</Typography>
-            <Typography variant="body1">¡Intenta de nuevo!</Typography>
-          </DrawAnnouncement>
-
-          <div>
+          <div style={{ marginTop: "2rem" }}>
             <Typography variant="h6">Jugadores</Typography>
-            Jugador 1: {slider1Value}
-            <br />
-            Jugador 2: {slider2Value}
+            <Typography variant="body2">Jugador 1: {slider1Value}</Typography>
+            <Typography variant="body2">Jugador 2: {slider2Value}</Typography>
           </div>
           <Typography variant="body2">
             Fecha y hora actual: {currentTime.toLocaleString()}
@@ -273,32 +323,42 @@ export default function Game() {
         </Grid>
       </Grid>
       <Modal
+      aria-labelledby="spring-modal-title"
+      aria-describedby="spring-modal-description"
+      open={start}
+      onClose={handleStart}
+      closeAfterTransition
+      BackdropComponent={Backdrop}
+      BackdropProps={{
+        timeout: 500,
+      }}
+    >
+      <div style={{ textAlign: "center", padding: "2rem" }}>
+        {countdown > 0 && <Typography variant="h2">{countdown}</Typography>}
+        {countdown === 0 && <Typography variant="h2">Start</Typography>}
+        <Button variant="contained" color="primary" onClick={handleStart} style={{ marginTop: "1rem" }}>
+          Cancel
+        </Button>
+      </div>
+    </Modal>
+
+      <Modal
         aria-labelledby="spring-modal-title"
         aria-describedby="spring-modal-description"
         open={open}
         onClose={handleClose}
         closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            TransitionComponent: Fade,
-          },
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
         }}
       >
         <Fade in={open}>
-          <Box sx={style}>
-            <Typography
-              id="spring-modal-title"
-              variant="h6"
-              component="h2"
-              style={{ color: "#3f51b5" }}
-            >
-              Feliciaddes Ganaste {winner}
+          <Box sx={{ p: 3, bgcolor: "#f0f0f0" }}>
+            <Typography variant="h6" sx={{ color: "#3f51b5", mb: 2 }}>
+              Felicidades Ganaste {winner}
             </Typography>
-            <div
-              className={`audio-waves ${isSpeaking ? "speaking" : ""}`}
-              style={{ width: "100%", height: "100px" }}
-            >
+            <div className={`audio-waves ${isSpeaking ? "speaking" : ""}`}>
               {Array.from({ length: 15 }, (_, i) => (
                 <div
                   key={i}
@@ -319,9 +379,9 @@ export default function Game() {
                 setSlider1Value(0);
                 setSlider2Value(0);
               }}
-              sx={{ mt: 2, bgcolor: "#9c27b0" }}
+              sx={{ mt: 2 }}
             >
-              Close
+              Cerrar
             </Button>
           </Box>
         </Fade>

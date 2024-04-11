@@ -15,7 +15,7 @@ const Title = ({ title }) => {
         alignItems: "center",
       }}
     >
-      <h1 style={{ textAlign: "center", color: "#1e90ff", fontWeight: "bold" }}>
+      <h1 style={{ textAlign: "center", color: 'var(--azure-600)', fontWeight: "bold" }}>
         {title}
       </h1>
     </motion.div>

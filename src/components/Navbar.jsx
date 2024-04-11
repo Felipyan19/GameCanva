@@ -20,20 +20,6 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 
 const pages = ["Inicio", "Registrarse", "Historico", "Posiciones"];
 
-const MobileMenuTransition = React.forwardRef(function Transition(props, ref) {
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ x: "100%" }}
-      animate={{ x: 0 }}
-      exit={{ x: "100%" }}
-      transition={{ type: "spring", stiffness: 120, damping: 10 }}
-    >
-      <Menu {...props} />
-    </motion.div>
-  );
-});
-
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -50,7 +36,8 @@ function Navbar() {
 
   return (
     <>
-      <AppBar position="static">
+      <AppBar position="static" style={{ background:
+                "linear-gradient(to bottom, var(--azure-400), var(--azure-500))" }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
@@ -69,7 +56,7 @@ function Navbar() {
                 textDecoration: "none",
               }}
             >
-              LOGO
+              Canva Game
             </Typography>
 
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -102,7 +89,7 @@ function Navbar() {
                 textDecoration: "none",
               }}
             >
-              LOGOu
+              Canva Game
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
               {pages.map((page) => (
