@@ -212,25 +212,8 @@ export default function Game() {
       )}
       <Title title="Game Canva" />
 
-      <Grid
-        container
-        spacing={2}
-        style={{
-          height: "50vh",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Grid
-          item
-          xs={9}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+      <Grid container spacing={2} style={{ height: "100%" }}>
+      <Grid item xs={12} md={9} style={{ marginBottom: "20px" }}>
           <StyledBox>
             <Box
               sx={{
@@ -261,7 +244,7 @@ export default function Game() {
             />
           </div>
         </Grid>
-        <Grid item xs={3} sx={{ textAlign: "center", padding: 2 }}>
+        <Grid item xs={12} md={3}>
           <WinnerAnnouncement>
             <Typography variant="h6">Gano: {winner}</Typography>
             <Typography variant="body1">¡Felicidades!</Typography>
