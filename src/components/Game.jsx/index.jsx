@@ -15,6 +15,7 @@ import Button from "@mui/material/Button";
 import { useSpring, animated } from "@react-spring/web";
 import Confetti from "react-confetti";
 import raceImg from "../../assets/race.avif";
+import Photo from "../../components/Photo";
 
 const StyledSlider = styled(Slider)({
   "& .MuiSlider-thumb": {
@@ -28,14 +29,6 @@ const StyledSlider = styled(Slider)({
 });
 
 const WinnerAnnouncement = styled(Box)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-  padding: theme.spacing(2),
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.success.light,
-  textAlign: "center",
-}));
-
-const DrawAnnouncement = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
   padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
@@ -74,44 +67,6 @@ const Fade = React.forwardRef(function Fade(props, ref) {
     </animated.div>
   );
 });
-
-function PhotoCapture() {
-  const videoRef = useRef(null);
-  const [capturedPhoto, setCapturedPhoto] = useState(null);
-
-  const handleCapture = () => {
-    const video = videoRef.current;
-
-    if (video && video.srcObject) {
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-
-      // Configurar el tamaño del lienzo para que coincida con el tamaño del video
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-
-      // Dibujar el fotograma actual del video en el lienzo
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      // Convertir la imagen del lienzo a base64
-      const imageDataURL = canvas.toDataURL("image/jpeg");
-
-      // Guardar la imagen en el localStorage
-      localStorage.setItem("capturedPhoto", imageDataURL);
-
-      // Actualizar el estado para mostrar la imagen capturada
-      setCapturedPhoto(imageDataURL);
-    }
-  };
-
-  return (
-    <div>
-      <video ref={videoRef} autoPlay />
-      <button onClick={handleCapture}>Capturar</button>
-      {capturedPhoto && <img src={capturedPhoto} alt="Captured" />}
-    </div>
-  );
-}
 
 export default function Game() {
   const [slider1Value, setSlider1Value] = useState(0);
@@ -207,9 +162,6 @@ export default function Game() {
       });
   };
 
-  // Función para tomar una foto y guardarla en el localStorage
-
-  // Llamar a la función para tomar y guardar la fot
   useEffect(() => {
     if (winner && !open) {
       const endTime = new Date();
@@ -435,7 +387,7 @@ export default function Game() {
               Tu tiempo de juego es de {elapsedTime / 1000} segundos
             </Typography>
             <Button>
-              <PhotoCapture />
+              <Photo />
             </Button>
             <Button
               variant="contained"
