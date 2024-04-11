@@ -35,26 +35,12 @@ const getLocalStorage = () => {
   const data = localStorage.getItem("data");
   if (data) {
     const parsedData = JSON.parse(data);
-    // Crear un objeto para almacenar los puntos por jugador
-    const playerPoints = {};
-    parsedData.forEach((item) => {
-      if (playerPoints[item.id]) {
-        // Si el jugador ya existe en el objeto, sumar los puntos
-        playerPoints[item.id] += item.time;
-      } else {
-        // Si el jugador no existe en el objeto, inicializar con los puntos actuales
-        playerPoints[item.id] = item.time;
-      }
+    // Agregar la URL de la imagen a cada objeto en parsedData
+    parsedData.forEach(item => {
+      item.imageUrl = localStorage.getItem(item.id);
     });
-    // Convertir el objeto en un array de objetos para mostrar en la tabla
-    const formattedData = Object.keys(playerPoints).map((playerId) => ({
-      id: playerId,
-      totalPoints: parsedData.filter((item) => item.id === playerId).length,
-      timesPlayed: playerPoints[playerId],
-    }));
-    return formattedData;
+    // Resto del código para obtener datos del local storage...
   }
-  return [];
 };
 
 export default function CustomizedTables() {
@@ -80,6 +66,7 @@ export default function CustomizedTables() {
                 <StyledTableCell align="center">Jugador</StyledTableCell>
                 <StyledTableCell align="center">Gana</StyledTableCell>
                 <StyledTableCell align="center">Tiempo(s)</StyledTableCell>
+                <StyledTableCell align="center">Foto</StyledTableCell> {/* Nueva columna para la foto */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -90,6 +77,9 @@ export default function CustomizedTables() {
                   </StyledTableCell>
                   <StyledTableCell align="center">{row.totalPoints}</StyledTableCell>
                   <StyledTableCell align="center">{row.timesPlayed}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    <img src={row.imageUrl} alt="Player" style={{ width: 50, height: 50, borderRadius: "50%" }} />
+                  </StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
