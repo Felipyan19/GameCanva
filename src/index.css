@@ -27,3 +27,20 @@ code {
   align-items: center;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
+
+:root {
+  --azure-50: #f4f6fb;
+  --azure-100: #e9edf5;
+  --azure-200: #cedae9;
+  --azure-300: #a3bad6;
+  --azure-400: #7195bf;
+  --azure-500: #4f78a8;
+  --azure-600: #3c5e8b;
+  --azure-700: #324c72;
+  --azure-800: #2c4260;
+  --azure-900: #293951;
+  --azure-950: #1b2536;
+
+  --gradient-azure-100-700: linear-gradient(135deg, var(--azure-100), var(--azure-700));
+  --gradient-azure-400-950: linear-gradient(135deg, var(--azure-400), var(--azure-950));
+}
