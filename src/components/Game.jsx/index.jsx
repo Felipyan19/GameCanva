@@ -75,7 +75,6 @@ const Fade = React.forwardRef(function Fade(props, ref) {
   );
 });
 
-
 function PhotoCapture() {
   const videoRef = useRef(null);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
@@ -84,8 +83,8 @@ function PhotoCapture() {
     const video = videoRef.current;
 
     if (video && video.srcObject) {
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
 
       // Configurar el tamaño del lienzo para que coincida con el tamaño del video
       canvas.width = video.videoWidth;
@@ -95,10 +94,10 @@ function PhotoCapture() {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       // Convertir la imagen del lienzo a base64
-      const imageDataURL = canvas.toDataURL('image/jpeg');
+      const imageDataURL = canvas.toDataURL("image/jpeg");
 
       // Guardar la imagen en el localStorage
-      localStorage.setItem('capturedPhoto', imageDataURL);
+      localStorage.setItem("capturedPhoto", imageDataURL);
 
       // Actualizar el estado para mostrar la imagen capturada
       setCapturedPhoto(imageDataURL);
@@ -113,7 +112,6 @@ function PhotoCapture() {
     </div>
   );
 }
-
 
 export default function Game() {
   const [slider1Value, setSlider1Value] = useState(0);
@@ -211,7 +209,7 @@ export default function Game() {
 
   // Función para tomar una foto y guardarla en el localStorage
 
-// Llamar a la función para tomar y guardar la fot
+  // Llamar a la función para tomar y guardar la fot
   useEffect(() => {
     if (winner && !open) {
       const endTime = new Date();
@@ -424,7 +422,6 @@ export default function Game() {
             <Typography variant="h6" sx={{ color: "#3f51b5", mb: 2 }}>
               Felicidades Ganaste {winner}
             </Typography>
-            <PhotoCapture />
             <div className={`audio-waves ${isSpeaking ? "speaking" : ""}`}>
               {Array.from({ length: 15 }, (_, i) => (
                 <div
@@ -437,6 +434,9 @@ export default function Game() {
             <Typography id="spring-modal-description" sx={{ mt: 2 }}>
               Tu tiempo de juego es de {elapsedTime / 1000} segundos
             </Typography>
+            <Button>
+              <PhotoCapture />
+            </Button>
             <Button
               variant="contained"
               color="primary"
