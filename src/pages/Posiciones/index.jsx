@@ -31,19 +31,43 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const getLocalStorage = () => {
-  const data = localStorage.getItem("data");
-  if (data) {
-    const parsedData = JSON.parse(data);
-    // Agregar la URL de la imagen a cada objeto en parsedData
-    parsedData.forEach(item => {
-      item.imageUrl = localStorage.getItem(item.id);
-    });
-    // Resto del código para obtener datos del local storage...
-  }
-};
+const ScrollableTableContainer = styled(TableContainer)({
+  maxHeight: "60vh",
+  overflowY: "auto",
+});
+
+// const getLocalStorage = () => {
+//   const data = localStorage.getItem("data");
+//   if (data) {
+//     const parsedData = JSON.parse(data); // Convierte la cadena JSON en un objeto JavaScript.
+//     return ( parsedData );
+//   }
+//   return [];
+// };
 
 export default function CustomizedTables() {
+  const [jugadores, setJugadores] = React.useState([]);
+  const apiUrl = process.env.REACT_APP_API_URL;
+
+  React.useEffect(() => {
+    const obtenerJugadores = async () => {
+      try {
+        const response = await fetch(
+          `https://zr5zwb0d-5000.use.devtunnels.ms/api/posiciones`
+        );
+        if (!response.ok) {
+          throw new Error("Error al obtener jugadores");
+        }
+        const data = await response.json();
+        setJugadores(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error:", error.message);
+      }
+    };
+    obtenerJugadores();
+  }, []);
+
   return (
     <>
       <Navbar />
@@ -58,33 +82,61 @@ export default function CustomizedTables() {
         }}
         style={{ width: "80%", margin: "auto" }}
       >
-        <Title title="Historial" />
-        <TableContainer component={Paper}>
+        <Title title="Posiciones" />
+        <Table
+          sx={{ minWidth: 700, background: "var(--azure-600)" }}
+          aria-label="customized table"
+        >
+          <TableHead>
+            <TableRow>
+              <StyledTableCell align="center">ID</StyledTableCell>
+              <StyledTableCell align="center">Nombre</StyledTableCell>
+              <StyledTableCell align="center">Partidas jugadas</StyledTableCell>
+              <StyledTableCell align="center">Partidas ganadas</StyledTableCell>
+              <StyledTableCell align="center">
+                Partidas perdidas
+              </StyledTableCell>
+              <StyledTableCell align="center">
+                Tiempo total ganador(s)
+              </StyledTableCell>
+              <StyledTableCell align="center">Foto</StyledTableCell>{" "}
+              {/* Nueva columna para la foto */}
+            </TableRow>
+          </TableHead>
+        </Table>
+        <ScrollableTableContainer component={Paper}>
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell align="center">Jugador</StyledTableCell>
-                <StyledTableCell align="center">Gana</StyledTableCell>
-                <StyledTableCell align="center">Tiempo(s)</StyledTableCell>
-                <StyledTableCell align="center">Foto</StyledTableCell> {/* Nueva columna para la foto */}
-              </TableRow>
-            </TableHead>
             <TableBody>
-              {getLocalStorage().map((row) => (
+              {jugadores.map((row) => (
                 <StyledTableRow key={row.id}>
                   <StyledTableCell component="th" scope="row">
                     {row.id}
                   </StyledTableCell>
-                  <StyledTableCell align="center">{row.totalPoints}</StyledTableCell>
-                  <StyledTableCell align="center">{row.timesPlayed}</StyledTableCell>
+                  <StyledTableCell align="center">{row.nombre}</StyledTableCell>
                   <StyledTableCell align="center">
-                    <img src={row.imageUrl} alt="Player" style={{ width: 50, height: 50, borderRadius: "50%" }} />
+                    {row.partidas_jugadas}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.partidas_ganadas}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.partidas_perdidas}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.tiempo_total_ganador}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    <img
+                      src={`data:image/png;base64, ${row.foto}`}
+                      width="200px"
+                      alt="Foto de jugador"
+                    />
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
           </Table>
-        </TableContainer>
+        </ScrollableTableContainer>
       </motion.div>
     </>
   );

@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Historico from "./pages/Historico/index";
 import Posiciones from "./pages/Posiciones";
 import Register from "./pages/Register";
+import Users from "./pages/Users";
 import "./App.css";
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/usuarios" element={<Users />} />
         <Route path="/Registrarse" element={<Register />} />
         <Route path="/Historico" element={<Historico />} />
         <Route path="/Posiciones" element={<Posiciones />} />

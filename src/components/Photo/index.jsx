@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react';
-import Webcam from 'react-webcam';
+import React, { useRef, useState } from "react";
+import Webcam from "react-webcam";
+import { Button } from "@mui/material";
 
-function Photo() {
+function Photo({ setFoto }) {
   const webcamRef = useRef(null);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
   const [cameraOn, setCameraOn] = useState(true);
@@ -9,22 +10,53 @@ function Photo() {
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     setCapturedPhoto(imageSrc);
-    localStorage.setItem('capturedPhoto', imageSrc);
-    setCameraOn(false); // Apagar la cámara después de capturar la foto
+    setFoto(imageSrc); 
+    setCameraOn(false); 
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFoto(file);
   };
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "16px" }}>
       {cameraOn && (
-        <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          style={{ width: '100%', maxWidth: '500px' }}
-        />
+        <div style={{ width: "100%", maxWidth: "500px", marginBottom: "16px" }}>
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/jpeg"
+          />
+        </div>
       )}
-      {cameraOn && <button onClick={capture}>Capturar</button>}
-      {capturedPhoto && <img src={capturedPhoto} alt="Captured" />}
+      <div style={{ display: "flex", alignItems: "center", padding: "16px" }}> 
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={capture}
+        style={{ margin: "8px" }}
+      >
+        Capturar
+      </Button>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        style={{ display: "none" }}
+        id="upload-photo"
+      />
+      <label htmlFor="upload-photo">
+        <Button
+          variant="contained"
+          component="span"
+          style={{ margin: "8px" }}
+        >
+          Subir foto
+        </Button>
+      </label>
+
+      </div>
     </div>
   );
 }

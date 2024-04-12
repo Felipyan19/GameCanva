@@ -18,7 +18,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 
-const pages = ["Inicio", "Registrarse", "Historico", "Posiciones"];
+const pages = ["Inicio", "Registrarse", "Historico", "Posiciones", "usuarios"];
 
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
