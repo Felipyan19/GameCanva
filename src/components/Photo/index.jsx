@@ -36,14 +36,15 @@ function Photo({ setFoto, setCameraOn, cameraOn }) {
     <div style={{ padding: "16px" }}>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         {cameraOn && (
-          <div style={{ width: "50%", marginBottom: "16px" }}>
-            <Webcam
+          <div style={{ width: "50%", marginBottom: "16px", maxWidth: "100%" }}>
+          <Webcam
               audio={false}
               ref={webcamRef}
               screenshotFormat="image/jpeg"
               videoConstraints={{ width: 640, height: 480 }}
-            />
-          </div>
+          />
+      </div>
+      
         )}
         {photoPreview && ( // Mostrar la vista previa de la foto si está disponible
           <img src={photoPreview} alt="Vista previa de la foto" style={{ maxWidth: "100%" }} />
