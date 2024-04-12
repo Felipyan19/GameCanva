@@ -82,7 +82,7 @@ const Register = () => {
           stiffness: 120,
           damping: 10,
         }}
-        style={{ width: "80%", margin: "auto" }}
+        style={{ overflowY: "auto", height: "100vh", padding: "20px" }}
       >
         <Title title="Registrar Jugador" />
         <div
@@ -92,7 +92,7 @@ const Register = () => {
             background: "var(--azure-50)",
             borderRadius: "1rem",
             boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
-            padding: "4rem",
+            marginBottom: "10rem",
           }}
         >
           <form
@@ -104,6 +104,7 @@ const Register = () => {
               flexDirection: "column",
               width: "80%",
               margin: "auto",
+              padding: "2rem",
             }}
           >
             <TextField
@@ -124,57 +125,57 @@ const Register = () => {
               Registrar Jugador
             </Button>
           </form>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            closeAfterTransition
-            BackdropComponent={Backdrop}
-            BackdropProps={{
-              timeout: 500,
-            }}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Box
-              sx={{
-                p: 3,
-                bgcolor: "#ffffff",
-                borderRadius: "0.5rem",
-                position: "relative",
-                boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <Typography variant="h6" sx={{ color: "#3f51b5", mb: 2 }}>
-                ¡Felicidades! El jugador se registró con éxito.
-              </Typography>
-              <Typography variant="body1" sx={{ color: "#3f51b5", mb: 2 }}>
-                Nombre del jugador: {nombre}
-              </Typography>
-              <Typography variant="body1" sx={{ color: "#3f51b5", mb: 2 }}>
-                Foto:
-              </Typography>
-              <Box sx={{ textAlign: "center", mb: 2 }}>
-                <img
-                  src={`data:image/png;base64, ${data.foto}`}
-                  width="200px"
-                  alt="Foto de jugador"
-                />
-              </Box>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleClose}
-                sx={{ mt: 2, alignSelf: "flex-end" }}
-              >
-                Cerrar
-              </Button>
-            </Box>
-          </Modal>
         </div>
       </motion.div>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Box
+          sx={{
+            p: 3,
+            bgcolor: "#ffffff",
+            borderRadius: "0.5rem",
+            position: "relative",
+            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          <Typography variant="h6" sx={{ color: "#3f51b5", mb: 2 }}>
+            ¡Felicidades! El jugador se registró con éxito.
+          </Typography>
+          <Typography variant="body1" sx={{ color: "#3f51b5", mb: 2 }}>
+            Nombre del jugador: {nombre}
+          </Typography>
+          <Typography variant="body1" sx={{ color: "#3f51b5", mb: 2 }}>
+            Foto:
+          </Typography>
+          <Box sx={{ textAlign: "center", mb: 2 }}>
+            <img
+              src={`data:image/png;base64, ${data.foto}`}
+              width="200px"
+              alt="Foto de jugador"
+            />
+          </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleClose}
+            sx={{ mt: 2, alignSelf: "flex-end" }}
+          >
+            Cerrar
+          </Button>
+        </Box>
+      </Modal>
     </>
   );
 };
