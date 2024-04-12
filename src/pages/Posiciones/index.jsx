@@ -10,31 +10,9 @@ import Paper from "@mui/material/Paper";
 import { motion } from "framer-motion";
 import Title from "../../components/Title";
 import Navbar from "../../components/Navbar";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-
-const ScrollableTableContainer = styled(TableContainer)({
-  maxHeight: "60vh",
-  overflowY: "auto",
-});
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { FaTrophy, FaMedal, FaAward } from 'react-icons/fa';
 
 // const getLocalStorage = () => {
 //   const data = localStorage.getItem("data");
@@ -68,6 +46,19 @@ export default function CustomizedTables() {
     obtenerJugadores();
   }, []);
 
+  const puesto = (posicion) => {
+    switch (posicion) {
+      case 1:
+        return <FaTrophy className="p-icon-lg p-text-info" />;
+      case 2:
+        return <FaMedal className="p-icon-lg p-text-success" />;
+      case 3:
+        return <FaAward className="p-icon-lg p-text-warning" />;
+      default:
+        return <div className="p-tag p-tag-rounded p-tag-secondary">{posicion}</div>;
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -83,60 +74,68 @@ export default function CustomizedTables() {
         style={{ width: "80%", margin: "auto" }}
       >
         <Title title="Posiciones" />
-        <Table
-          sx={{ minWidth: 700, background: "var(--azure-600)" }}
-          aria-label="customized table"
-        >
-          <TableHead>
-            <TableRow>
-              <StyledTableCell align="center">ID</StyledTableCell>
-              <StyledTableCell align="center">Nombre</StyledTableCell>
-              <StyledTableCell align="center">Partidas jugadas</StyledTableCell>
-              <StyledTableCell align="center">Partidas ganadas</StyledTableCell>
-              <StyledTableCell align="center">
-                Partidas perdidas
-              </StyledTableCell>
-              <StyledTableCell align="center">
-                Tiempo total ganador(s)
-              </StyledTableCell>
-              <StyledTableCell align="center">Foto</StyledTableCell>{" "}
-              {/* Nueva columna para la foto */}
-            </TableRow>
-          </TableHead>
-        </Table>
-        <ScrollableTableContainer component={Paper}>
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableBody>
-              {jugadores.map((row) => (
-                <StyledTableRow key={row.id}>
-                  <StyledTableCell component="th" scope="row">
-                    {row.id}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">{row.nombre}</StyledTableCell>
-                  <StyledTableCell align="center">
-                    {row.partidas_jugadas}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {row.partidas_ganadas}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {row.partidas_perdidas}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    {row.tiempo_total_ganador}
-                  </StyledTableCell>
-                  <StyledTableCell align="center">
-                    <img
-                      src={`data:image/png;base64, ${row.foto}`}
-                      width="200px"
-                      alt="Foto de jugador"
-                    />
-                  </StyledTableCell>
-                </StyledTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </ScrollableTableContainer>
+
+        <div className="p-card p-shadow-4 p-mb-4">
+          <DataTable
+            value={jugadores}
+            scrollable
+            scrollDirection="both"
+            scrollHeight="60vh"
+            className="data-table-container striped-rows"
+          >
+            <Column
+              field="posicion"
+              header="Posicion"
+              className="custom-column"
+              style={{ textAlign: "center" }}
+              body={(rowData) => puesto(rowData.posicion)}
+            ></Column>
+            <Column
+              style={{ textAlign: "center" }}
+              field="nombre"
+              header="Nombre"
+              className="custom-column"
+            ></Column>
+            <Column
+              field="partidas_jugadas"
+              header="Partidas jugadas"
+              className="custom-column"
+              style={{ textAlign: "center" }}
+            ></Column>
+            <Column
+              style={{ textAlign: "center" }}
+              field="partidas_ganadas"
+              header="Partidas Ganadas"
+              className="custom-column"
+            ></Column>
+            <Column
+              field="partidas_perdidas"
+              header="Partidas Perdidas"
+              className="custom-column"
+              style={{ textAlign: "center" }}
+            ></Column>
+            <Column
+              style={{ textAlign: "center" }}
+              field="tiempo_sumado"
+              header="Tiempo Total Ganador"
+              className="custom-column"
+            ></Column>
+            <Column
+              style={{ textAlign: "center" }}
+              field="foto"
+              header="Foto"
+              body={(rowData) => (
+                <img
+                  src={`data:image/png;base64, ${rowData.foto}`}
+                  className="custom-image"
+                  width={"100px"}
+                  alt="Foto de jugador"
+                />
+              )}
+              className="custom-column"
+            ></Column>
+          </DataTable>
+        </div>
       </motion.div>
     </>
   );

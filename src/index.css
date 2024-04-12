@@ -42,3 +42,151 @@ code {
     var(--azure-950)
   );
 }
+
+/* Contenedor cuando la tabla es scrollable */
+.p-datatable-scrollable {
+  /* Estilos específicos para la tabla scrollable */
+}
+
+/* Sección de encabezado */
+.p-datatable-header {
+  background: var(--azure-400);
+  border-bottom: 1px solid var(--azure-300);
+}
+
+/* Sección de pie de página */
+.p-datatable-footer {
+  /* Estilos del pie de página */
+}
+
+
+
+/* Envoltorio del elemento de tabla */
+.p-datatable-wrapper {
+  /* Estilos del envoltorio */
+}
+
+/* Elemento de tabla */
+.p-datatable-table {
+  /* Estilos de la tabla */
+}
+
+/* Elemento thead de la tabla */
+.p-datatable-thead {
+
+}
+
+/* Elemento tbody de la tabla */
+.p-datatable-tbody {
+  background: var(--azure-200);
+}
+
+/* Elemento tfoot de la tabla */
+.p-datatable-tfoot {
+  /* Estilos del pie de la tabla */
+}
+
+/* Título de una columna */
+.p-column-title {
+  /* Estilos del título de la columna */
+}
+
+/* Encabezado de columna ordenable */
+.p-sortable-column {
+  /* Estilos del encabezado de columna ordenable */
+}
+
+/* Encabezado de columna congelado */
+.p-frozen-column {
+  /* Estilos del encabezado de columna congelado */
+}
+
+/* Encabezado de un grupo de filas */
+.p-rowgroup-header {
+  /* Estilos del encabezado de un grupo de filas */
+}
+
+/* Pie de un grupo de filas */
+.p-rowgroup-footer {
+  /* Estilos del pie de un grupo de filas */
+}
+
+/* Contenido expandido de una fila */
+.p-datatable-row-expansion {
+  /* Estilos del contenido expandido de una fila */
+}
+
+/* Elemento de cambio de fila para expansión de fila */
+.p-row-toggler {
+  /* Estilos del elemento de cambio de fila */
+}
+
+/* Celda que contiene el mensaje vacío */
+.p-datatable-emptymessage {
+  /* Estilos de la celda que contiene el mensaje vacío */
+}
+
+/* Botón de lápiz del editor de fila */
+.p-row-editor-init {
+  /* Estilos del botón de lápiz del editor de fila */
+}
+
+/* Botón de guardar del editor de fila */
+.p-row-editor-save {
+  /* Estilos del botón de guardar del editor de fila */
+}
+
+/* Botón de cancelar del editor de fila */
+.p-row-editor-cancel {
+  /* Estilos del botón de cancelar del editor de fila */
+}
+
+.data-table-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border-color: var(--azure-500);
+  border-style: solid;
+}
+
+.data-table-column {
+  min-width: 7rem;
+}
+
+.p-column-header-content{
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+th,
+td {
+  border-right: 2px solid var( --azure-300);
+  padding: 10px;
+}
+
+th:last-child,
+td:last-child {
+  border-right: none;
+}
+tr:nth-child(1) {
+  align-items: center;
+}
+
+th {
+  background-color: var(--azure-400)
+}
+
+tr:nth-child(odd) {
+  background-color: var(--azure-50); 
+}
+
+tr:nth-child(even) {
+  background-color: var(--azure-100) 
+}
+
+.p-datatable-thead {
+  background: var(--azure-400);
+  border-bottom: 1px solid var(--azure-300);
+  border-radius: 10px;
+}

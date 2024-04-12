@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 
 const Title = ({ title }) => {
@@ -9,13 +8,20 @@ const Title = ({ title }) => {
       transition={{ duration: 1, type: "spring", stiffness: 120, damping: 10 }}
       style={{
         width: "100%",
-        height: "15vh",
+        height: "auto",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
       }}
     >
-      <h1 style={{ textAlign: "center", color: 'var(--azure-600)', fontWeight: "bold", fontSize: "6rem" }}>
+      <h1
+        style={{
+          textAlign: "center",
+          color: "var(--azure-600)",
+          fontWeight: "bold",
+          fontSize: "clamp(4rem, 8vw, 6rem)",
+        }}
+      >
         {title}
       </h1>
     </motion.div>

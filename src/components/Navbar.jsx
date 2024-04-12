@@ -220,7 +220,6 @@ function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-      ;
     </>
   );
 }

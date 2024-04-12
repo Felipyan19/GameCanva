@@ -1,13 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Slider, Typography } from "@mui/material";
-import PetsIcon from "@mui/icons-material/Pets";
-import ProductionQuantityLimitsSharpIcon from "@mui/icons-material/ProductionQuantityLimitsSharp";
 import { styled } from "@mui/material/styles";
 import { Grid } from "@mui/material";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import Title from "../../components/Title";
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
 import "./style.css";
 import Backdrop from "@mui/material/Backdrop";
 import Modal from "@mui/material/Modal";
@@ -16,14 +13,12 @@ import { useSpring, animated } from "@react-spring/web";
 import Confetti from "react-confetti";
 import raceImg from "../../assets/race.avif";
 import MenuItem from "@mui/material/MenuItem";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { FaTrophy, FaMedal, FaAward } from "react-icons/fa";
 
-const apiUrl = process.env.REACT_APP_API_URL;
+//const apiUrl = process.env.REACT_APP_API_URL;
 
 const StyledSlider = styled(Slider)({
   "& .MuiSlider-thumb": {
@@ -34,11 +29,6 @@ const StyledSlider = styled(Slider)({
       boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
     },
   },
-});
-
-const ScrollableTableContainer = styled(TableContainer)({
-  maxHeight: "60vh",
-  overflowY: "auto",
 });
 
 const Fade = React.forwardRef(function Fade(props, ref) {
@@ -73,26 +63,6 @@ const Fade = React.forwardRef(function Fade(props, ref) {
   );
 });
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-
 export default function Game() {
   const [slider1Value, setSlider1Value] = useState({ jugador: null, value: 0 });
   const [slider2Value, setSlider2Value] = useState({ jugador: null, value: 0 });
@@ -109,6 +79,10 @@ export default function Game() {
   const handleClose = () => setOpen(false);
   const handleOpen2 = () => setOpen2(true);
   const handleClose2 = () => setOpen2(false);
+  const [jugadores, setJugadores] = useState([]);
+  const [open2, setOpen2] = useState(false);
+  const [remainingPlayers, setRemainingPlayers] = useState([]);
+  const [posicion, setPosicion] = useState([]);
 
   const speak = (text) => {
     if ("speechSynthesis" in window) {
@@ -120,17 +94,6 @@ export default function Game() {
       console.error("Speech synthesis not supported in this browser.");
     }
   };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const [jugadores, setJugadores] = React.useState([]);
-  const [open2, setOpen2] = React.useState(false);
-  const [remainingPlayers, setRemainingPlayers] = React.useState([]);
 
   const obtenerJugadores = async () => {
     try {
@@ -147,6 +110,7 @@ export default function Game() {
       console.error("Error:", error.message);
     }
   };
+
   const handleStart = () => {
     setStart(true);
     Swal.fire({
@@ -190,6 +154,7 @@ export default function Game() {
         });
       });
   };
+
   const handleRegister = async () => {
     try {
       const response = await fetch(
@@ -217,9 +182,40 @@ export default function Game() {
     }
   };
 
-  const [posicion, setPosicion] = React.useState([]);
+  const handleSlider1Change = (event, newValue) => {
+    if (newValue >= 100 && !winner.jugador) {
+      setWinner({ ...slider1Value });
+      setPerdedor({ ...slider2Value });
+      setStartTime(new Date());
+    }
+    setSlider1Value({ ...slider1Value, value: newValue });
+  };
 
-  React.useEffect(() => {
+  const handleSlider2Change = (event, newValue) => {
+    if (newValue >= 100 && !winner.jugador) {
+      setWinner({ ...slider2Value });
+      setPerdedor({ ...slider1Value });
+      setStartTime(new Date());
+    }
+    setSlider2Value({ ...slider2Value, value: newValue });
+  };
+
+  const puesto = (posicion) => {
+    switch (posicion) {
+      case 1:
+        return <FaTrophy className="p-icon-lg p-text-info" />;
+      case 2:
+        return <FaMedal className="p-icon-lg p-text-success" />;
+      case 3:
+        return <FaAward className="p-icon-lg p-text-warning" />;
+      default:
+        return (
+          <div className="p-tag p-tag-rounded p-tag-secondary">{posicion}</div>
+        );
+    }
+  };
+
+  useEffect(() => {
     const obtenerJugadores = async () => {
       try {
         const response = await fetch(
@@ -239,6 +235,13 @@ export default function Game() {
   }, [winner]);
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     if (winner.jugador && !open) {
       console.log("El ganador es:", winner);
       const endTime = new Date();
@@ -249,24 +252,6 @@ export default function Game() {
       handleRegister();
     }
   }, [winner, open]);
-
-  const handleSlider1Change = (event, newValue) => {
-    if (newValue >= 100 && !winner.jugador) {
-      setWinner({ ...slider1Value });
-      setPerdedor({ ...slider2Value });
-      setStartTime(new Date());
-    }
-    setSlider1Value({ ...slider1Value, value: newValue });
-  };
-
-  const handleSlider2Change = (event, newValue) => {
-    if (newValue >= 100 && !winner.jugador) {
-      setWinner({ ...slider2Value });
-      setPerdedor({ ...slider1Value });
-      setStartTime(new Date());
-    }
-    setSlider2Value({ ...slider2Value, value: newValue });
-  };
 
   return (
     <motion.div
@@ -281,10 +266,11 @@ export default function Game() {
 
       <Title title="Carrera" />
 
-      <Grid container spacing={4}>
+      <Grid container spacing={4} style={{ marginBottom: "5rem" }}>
         <Grid item xs={12} md={9}>
           <Box
             sx={{
+              marginTop: "1.5rem",
               height: 200,
               display: "flex",
               justifyContent: "center",
@@ -455,41 +441,43 @@ export default function Game() {
           )}
         </Grid>
         <Grid item xs={12} md={3}>
-          <Table aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell align="center">Nombre</StyledTableCell>
-                <StyledTableCell align="center">
-                  Partidas ganadas
-                </StyledTableCell>
-                <StyledTableCell align="center">Foto</StyledTableCell>{" "}
-                {/* Nueva columna para la foto */}
-              </TableRow>
-            </TableHead>
-          </Table>
-          <ScrollableTableContainer component={Paper}>
-            <Table aria-label="customized table">
-              <TableBody>
-                {posicion.map((row) => (
-                  <StyledTableRow key={row.id}>
-                    <StyledTableCell align="center">
-                      {row.nombre}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.partidas_jugadas}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <img
-                        src={`data:image/png;base64, ${row.foto}`}
-                        width="50px"
-                        alt="Foto de jugador"
-                      />
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </ScrollableTableContainer>
+          <div className="p-card p-shadow-4 p-mb-4" >
+            <DataTable
+              value={posicion}
+              scrollable
+              scrollDirection="both"
+              scrollHeight="60vh"
+              className="data-table-container striped-rows"
+            >
+              <Column
+                field="posicion"
+                header="Posicion"
+                className="custom-column"
+                style={{ textAlign: "center" }}
+                body={(rowData) => puesto(rowData.posicion)}
+              ></Column>
+              <Column
+                style={{ textAlign: "center" }}
+                field="nombre"
+                header="Nombre"
+                className="custom-column"
+              ></Column>
+              <Column
+                style={{ textAlign: "center" }}
+                field="foto"
+                header="Foto"
+                body={(rowData) => (
+                  <img
+                    src={`data:image/png;base64, ${rowData.foto}`}
+                    className="custom-image"
+                    width={"100px"}
+                    alt="Foto de jugador"
+                  />
+                )}
+                className="custom-column"
+              ></Column>
+            </DataTable>
+          </div>
         </Grid>
       </Grid>
 
