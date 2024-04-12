@@ -34,22 +34,40 @@ function Photo({ setFoto, setCameraOn, cameraOn }) {
 
   return (
     <div style={{ padding: "16px" }}>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         {cameraOn && (
-          <div style={{ width: "50%", marginBottom: "16px", maxWidth: "100%" }}>
-          <Webcam
+          <div
+            style={{ width: "50%", marginBottom: "16px", overflow: "hidden" }}
+          >
+            <Webcam
               audio={false}
               ref={webcamRef}
               screenshotFormat="image/jpeg"
               videoConstraints={{ width: 640, height: 480 }}
-          />
-      </div>
-      
+              style={{ width: "100%", objectFit: "cover" }}
+            />
+          </div>
         )}
         {photoPreview && ( // Mostrar la vista previa de la foto si está disponible
-          <img src={photoPreview} alt="Vista previa de la foto" style={{ maxWidth: "100%" }} />
+          <img
+            src={photoPreview}
+            alt="Vista previa de la foto"
+            style={{ maxWidth: "100%" }}
+          />
         )}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <Button
             variant="contained"
             color="primary"
