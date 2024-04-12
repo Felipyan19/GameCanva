@@ -32,7 +32,7 @@ function Photo({ setFoto }) {
     <div style={{  padding: "16px" }}>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         {cameraOn && (
-          <div style={{  maxWidth: "500px", marginBottom: "16px" }}>
+          <div style={{  maxWidth: "70vw", marginBottom: "16px" }}>
             <Webcam
               audio={false}
               ref={webcamRef}
