@@ -2,20 +2,24 @@ import React, { useRef, useState } from "react";
 import Webcam from "react-webcam";
 import { Button } from "@mui/material";
 
-function Photo({ setFoto }) {
+function Photo({ setFoto, setCameraOn, cameraOn }) {
   const webcamRef = useRef(null);
-  const [cameraOn, setCameraOn] = useState(true);
+
+  const [photoPreview, setPhotoPreview] = useState(null); // Estado para la vista previa de la foto
 
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     const blob = dataURItoBlob(imageSrc);
     setFoto(blob);
     setCameraOn(false);
+    setPhotoPreview(imageSrc); // Establecer la vista previa de la foto capturada
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setFoto(file);
+    setCameraOn(false);
+    setPhotoPreview(URL.createObjectURL(file)); // Establecer la vista previa de la foto seleccionada
   };
 
   const dataURItoBlob = (dataURI) => {
@@ -29,10 +33,10 @@ function Photo({ setFoto }) {
   };
 
   return (
-    <div style={{  padding: "16px" }}>
+    <div style={{ padding: "16px" }}>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
         {cameraOn && (
-          <div style={{  maxWidth: "70vw", marginBottom: "16px" }}>
+          <div style={{ maxWidth: "70vw", marginBottom: "16px" }}>
             <Webcam
               audio={false}
               ref={webcamRef}
@@ -40,7 +44,10 @@ function Photo({ setFoto }) {
             />
           </div>
         )}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}> 
+        {photoPreview && ( // Mostrar la vista previa de la foto si está disponible
+          <img src={photoPreview} alt="Vista previa de la foto" style={{ maxWidth: "100%" }} />
+        )}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
           <Button
             variant="contained"
             color="primary"

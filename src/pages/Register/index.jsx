@@ -1,49 +1,23 @@
 import React, { useState } from "react";
 import Photo from "../../components/Photo";
 import Navbar from "../../components/Navbar";
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, Modal, Box, Typography } from "@mui/material";
 import { motion } from "framer-motion";
 import Title from "../../components/Title";
-import Modal from "@mui/material/Modal";
-import { useSpring, animated } from "@react-spring/web";
-import { Box, Typography } from "@mui/material";
+import { ProgressSpinner } from 'primereact/progressspinner';
 import Backdrop from "@mui/material/Backdrop";
-
-const Fade = React.forwardRef(function Fade(props, ref) {
-  const { children, in: open, onEnter, onExited, ...other } = props;
-  const style = useSpring({
-    from: { opacity: 0 },
-    to: { opacity: open ? 1 : 0 },
-    onStart: () => {
-      if (open && onEnter) {
-        onEnter();
-      }
-    },
-    onRest: () => {
-      if (!open && onExited) {
-        onExited();
-      }
-    },
-  });
-
-  return (
-    <animated.div ref={ref} style={style} {...other}>
-      {children}
-    </animated.div>
-  );
-});
 
 const Register = () => {
   const [nombre, setNombre] = useState("");
   const [foto, setFoto] = useState(null);
   const [open, setOpen] = useState(false);
-  const apiUrl = process.env.REACT_APP_API_URL;
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [loading, setLoading] = useState(false); // Nuevo estado de carga
   const [data, setData] = useState([]);
+  const [cameraOn, setCameraOn] = useState(true);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true); // Establecer carga en true al iniciar la petición
 
     const formdata = new FormData();
     formdata.append("nombre", nombre);
@@ -67,7 +41,17 @@ const Register = () => {
       handleOpen();
     } catch (error) {
       console.error("Error:", error.message);
+    } finally {
+      setLoading(false); // Establecer carga en false al finalizar la petición
     }
+  };
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    setOpen(false)
+    setFoto(null)
+    setNombre("")
+    setCameraOn(true)
   };
 
   return (
@@ -115,12 +99,13 @@ const Register = () => {
               onChange={(e) => setNombre(e.target.value)}
               style={{ marginBottom: "20px" }}
             />
-            <Photo setFoto={setFoto} />
+            <Photo setFoto={setFoto} setCameraOn={setCameraOn} cameraOn={cameraOn}/>
             <Button
               variant="contained"
               color="primary"
               type="submit"
               style={{ marginTop: "20px" }}
+              disabled={loading} // Deshabilitar el botón mientras se carga
             >
               Registrar Jugador
             </Button>
@@ -130,48 +115,43 @@ const Register = () => {
       <Modal
         open={open}
         onClose={handleClose}
-        closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
           timeout: 500,
         }}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
       >
         <Box
           sx={{
-            p: 3,
-            bgcolor: "#ffffff",
-            borderRadius: "0.5rem",
-            position: "relative",
-            boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "white",
+            boxShadow: 24,
+            p: 4,
           }}
         >
-          <Typography variant="h6" sx={{ color: "#3f51b5", mb: 2 }}>
+          <Typography variant="h6" gutterBottom>
             ¡Felicidades! El jugador se registró con éxito.
           </Typography>
-          <Typography variant="body1" sx={{ color: "#3f51b5", mb: 2 }}>
+          <Typography variant="body1" gutterBottom>
             Nombre del jugador: {nombre}
           </Typography>
-          <Typography variant="body1" sx={{ color: "#3f51b5", mb: 2 }}>
+          <Typography variant="body1" gutterBottom>
             Foto:
           </Typography>
           <Box sx={{ textAlign: "center", mb: 2 }}>
-            <img
-              src={`data:image/png;base64, ${data.foto}`}
-              width="200px"
-              alt="Foto de jugador"
-            />
+            {loading ? (
+              <ProgressSpinner />
+            ) : (
+              <img
+                src={`data:image/png;base64, ${data.foto}`}
+                width="200px"
+                alt="Foto de jugador"
+              />
+            )}
           </Box>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleClose}
-            sx={{ mt: 2, alignSelf: "flex-end" }}
-          >
+          <Button onClick={handleClose} variant="contained" color="primary">
             Cerrar
           </Button>
         </Box>

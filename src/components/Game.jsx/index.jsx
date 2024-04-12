@@ -441,7 +441,7 @@ export default function Game() {
           )}
         </Grid>
         <Grid item xs={12} md={3}>
-          <div className="p-card p-shadow-4 p-mb-4" >
+          <div className="p-card p-shadow-4 p-mb-4">
             <DataTable
               value={posicion}
               scrollable
@@ -502,7 +502,15 @@ export default function Game() {
             <Typography variant="h6" sx={{ color: "#3f51b5", mb: 2 }}>
               Felicidades Ganaste {winner?.jugador}
             </Typography>
-            <div className={`audio-waves ${isSpeaking ? "speaking" : ""}`}>
+            <div
+              className={`audio-waves ${isSpeaking ? "speaking" : ""}`}
+              style={{
+                height: "10%",
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
               {Array.from({ length: 15 }, (_, i) => (
                 <div
                   key={i}
@@ -511,6 +519,7 @@ export default function Game() {
                 ></div>
               ))}
             </div>
+            <div style={{ textAlign: "center", width: "100%" }}>
             <img
               src={`data:image/png;base64, ${
                 jugadores.find((j) => j.nombre === winner.jugador)?.foto
@@ -518,7 +527,18 @@ export default function Game() {
               width="200px"
               alt="Foto de jugador"
             />
-            <Button></Button>
+            </div>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() =>
+                speak(`Felicidades ${winner.jugador}! Eres el ganador.`)
+              }
+              disabled={isSpeaking}
+              sx={{ mt: 2, mr: 1 }}
+            >
+              Reproducir Mensaje
+            </Button>
             <Button
               variant="contained"
               color="primary"
