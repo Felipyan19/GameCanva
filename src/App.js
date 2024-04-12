@@ -4,7 +4,7 @@ import Home from "./pages/Home";
 import Historico from "./pages/Historico/index";
 import Posiciones from "./pages/Posiciones";
 import Register from "./pages/Register";
-import Users from "./pages/Users";
+import Users from "./pages/Users/index";
 import "./App.css";
 
 function App() {
